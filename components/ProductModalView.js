@@ -43,7 +43,6 @@ const ProductModalView = ({ path, showModal, setShowModal, HeaderName }) => {
         onClose={() => {
           setShowModal(false);
         }}
-        _fade={{}}
       >
         <Modal.Content borderRadius={"xl"} p={4}>
           <Modal.CloseButton />
