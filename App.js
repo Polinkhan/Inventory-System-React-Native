@@ -1,19 +1,122 @@
 import React from "react";
 import {
   Text,
-  Link,
   HStack,
-  Center,
-  Heading,
   Switch,
   useColorMode,
   NativeBaseProvider,
   extendTheme,
-  VStack,
-  Box,
+  Center,
 } from "native-base";
-import NativeBaseIcon from "./components/NativeBaseIcon";
-import { Platform } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
+import Products from "./components/Products";
+import Profile from "./components/Profile";
+import { SafeAreaView } from "react-native-safe-area-context";
+import DataContextProvider, { useDataContext } from "./contexts/DataContext";
+import { FontAwesome5 } from "@expo/vector-icons";
+
+import { Feather } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
+
+const Stack = createStackNavigator();
+const Tab = createMaterialBottomTabNavigator();
+
+function BottomTab() {
+  const { theme } = useDataContext();
+  const { txt, primary } = theme;
+
+  return (
+    <Tab.Navigator
+      barStyle={{
+        margin: 8,
+        backgroundColor: primary,
+        borderRadius: 12,
+        overflow: "hidden",
+      }}
+    >
+      <Tab.Screen
+        name="Products"
+        component={Products}
+        initialParams={{
+          path: "data",
+          isRoot: true,
+          HeaderName: "Product Type",
+        }}
+        options={{
+          tabBarLabel: "Products",
+
+          tabBarIcon: ({ color, focused }) => (
+            <Feather
+              name="command"
+              size={20}
+              color={focused ? txt : "#cccccc"}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={Profile}
+        options={{
+          tabBarLabel: "My Cart",
+
+          tabBarIcon: ({ color, focused }) => (
+            <Entypo
+              name="add-to-list"
+              size={20}
+              color={focused ? txt : "#cccccc"}
+            />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
+
+function MyStack() {
+  const { theme } = useDataContext();
+  const { nav } = theme;
+  return (
+    <>
+      <SafeAreaView
+        style={{
+          backgroundColor: "#d7cbf5",
+          borderBottomEndRadius: 30,
+          borderBottomStartRadius: 30,
+        }}
+      >
+        <HStack justifyContent={"center"} alignItems={"center"} p={2} space={2}>
+          <FontAwesome5 name="store" size={16} color="#3f3f46" />
+          <Text fontSize={"lg"} fontWeight={"bold"} color="#3f3f46">
+            Khan Enterprise
+          </Text>
+        </HStack>
+      </SafeAreaView>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        <Stack.Screen name="/" component={BottomTab} />
+        <Stack.Screen name="Product-item" component={Products} />
+      </Stack.Navigator>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <NativeBaseProvider>
+      <NavigationContainer>
+        <DataContextProvider>
+          <MyStack />
+        </DataContextProvider>
+      </NavigationContainer>
+    </NativeBaseProvider>
+  );
+}
 
 // Define the config
 const config = {
@@ -23,48 +126,6 @@ const config = {
 
 // extend the theme
 export const theme = extendTheme({ config });
-
-export default function App() {
-  return (
-    <NativeBaseProvider>
-      <Center
-        _dark={{ bg: "blueGray.900" }}
-        _light={{ bg: "blueGray.50" }}
-        px={4}
-        flex={1}
-      >
-        <VStack space={5} alignItems="center">
-          <NativeBaseIcon />
-          <Heading size="lg">Welcome to NativeBase</Heading>
-          <HStack space={2} alignItems="center">
-            <Text>Edit</Text>
-            <Box
-              _web={{
-                _text: {
-                  fontFamily: "monospace",
-                  fontSize: "sm",
-                },
-              }}
-              px={2}
-              py={1}
-              _dark={{ bg: "blueGray.800" }}
-              _light={{ bg: "blueGray.200" }}
-            >
-              App.js
-            </Box>
-            <Text>and save to reload.</Text>
-          </HStack>
-          <Link href="https://docs.nativebase.io" isExternal>
-            <Text color="primary.500" underline fontSize={"xl"}>
-              Learn NativeBase
-            </Text>
-          </Link>
-          <ToggleDarkMode />
-        </VStack>
-      </Center>
-    </NativeBaseProvider>
-  );
-}
 
 // Color Switch Component
 function ToggleDarkMode() {
