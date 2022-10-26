@@ -12,13 +12,16 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import Products from "./components/Products";
-import Profile from "./components/Profile";
+import Profile from "./components/Cart";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DataContextProvider, { useDataContext } from "./contexts/DataContext";
 import { FontAwesome5 } from "@expo/vector-icons";
 
 import { Feather } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
+import Cart from "./components/Cart";
+import About from "./components/About";
+import LoadingScreen from "./components/LoadingScreen";
 
 const Stack = createStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
@@ -57,8 +60,8 @@ function BottomTab() {
         }}
       />
       <Tab.Screen
-        name="Profile"
-        component={Profile}
+        name="cart"
+        component={Cart}
         options={{
           tabBarLabel: "My Cart",
 
@@ -71,12 +74,23 @@ function BottomTab() {
           ),
         }}
       />
+      <Tab.Screen
+        name="about"
+        component={About}
+        options={{
+          tabBarLabel: "About",
+
+          tabBarIcon: ({ color, focused }) => (
+            <Entypo name="info" size={20} color={focused ? txt : "#cccccc"} />
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 }
 
 function MyStack() {
-  const { theme } = useDataContext();
+  const { theme, isDataLoad } = useDataContext();
   const { nav } = theme;
   return (
     <>
@@ -94,14 +108,18 @@ function MyStack() {
           </Text>
         </HStack>
       </SafeAreaView>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Stack.Screen name="/" component={BottomTab} />
-        <Stack.Screen name="Product-item" component={Products} />
-      </Stack.Navigator>
+      {isDataLoad ? (
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name="/" component={BottomTab} />
+          <Stack.Screen name="Product-item" component={Products} />
+        </Stack.Navigator>
+      ) : (
+        <LoadingScreen />
+      )}
     </>
   );
 }

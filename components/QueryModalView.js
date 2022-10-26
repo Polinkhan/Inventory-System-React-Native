@@ -1,17 +1,9 @@
-import {
-  Button,
-  Center,
-  Text,
-  VStack,
-  Modal,
-  Input,
-  Select,
-} from "native-base";
+import { Button, Center, Text, VStack, Modal, Input, Select } from "native-base";
 import React, { useState } from "react";
 import { Entypo } from "@expo/vector-icons";
 import { useDataContext } from "../contexts/DataContext";
 const QueryModalView = ({ path, showModal, setShowModal, HeaderName }) => {
-  const { database, setDatabase } = useDataContext();
+  const { database, updateDatabase } = useDataContext();
 
   const [name, setName] = useState("");
   const [selected, setSelected] = useState("");
@@ -21,15 +13,15 @@ const QueryModalView = ({ path, showModal, setShowModal, HeaderName }) => {
       if (selected === "query") copyData[name.replace(/\s+/g, "_")] = {};
       else copyData[name.replace(/\s+/g, "_")] = [];
     }
-    if (copyPath.length)
-      changeInRecursion(copyPath, copyData[copyPath.shift()]);
+    if (copyPath.length) changeInRecursion(copyPath, copyData[copyPath.shift()]);
   };
 
   const handleChange = () => {
     const copyPath = [...path];
     const copyData = { ...database };
     changeInRecursion(copyPath, copyData);
-    setDatabase({ ...copyData });
+    updateDatabase({ ...copyData });
+    setName("");
   };
 
   return (
@@ -52,13 +44,7 @@ const QueryModalView = ({ path, showModal, setShowModal, HeaderName }) => {
           </Modal.Header>
           <Modal.Body>
             <VStack space={4}>
-              <Input
-                variant={"rounded"}
-                placeholder={`Enter ${HeaderName} Name Here`}
-                fontSize={"sm"}
-                value={name}
-                onChangeText={(text) => setName(text)}
-              />
+              <Input variant={"rounded"} placeholder={`Enter ${HeaderName} Name Here`} fontSize={"sm"} value={name} onChangeText={(text) => setName(text)} />
               <Select
                 fontSize={"sm"}
                 borderRadius={"full"}
@@ -72,17 +58,8 @@ const QueryModalView = ({ path, showModal, setShowModal, HeaderName }) => {
                 }}
                 variant={"rounded"}
               >
-                <Select.Item
-                  label="To Add Query"
-                  value="query"
-                  borderRadius={"full"}
-                />
-                <Select.Item
-                  my={3}
-                  label="To Add Product"
-                  value="product"
-                  borderRadius={"full"}
-                />
+                <Select.Item label="To Add Query" value="query" borderRadius={"full"} />
+                <Select.Item my={3} label="To Add Product" value="product" borderRadius={"full"} />
               </Select>
             </VStack>
           </Modal.Body>
