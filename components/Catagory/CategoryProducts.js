@@ -4,7 +4,7 @@ import { theme } from "../../utils/StaticVariable";
 import { AntDesign } from "@expo/vector-icons";
 import { ScrollView, RefreshControl } from "react-native";
 import React, { useState, useCallback, useEffect } from "react";
-import Product from "../Product/Product";
+import Product from "../../screens/Product";
 import { client } from "../../axios/Client";
 
 const CategoryProducts = ({ navigation, route }) => {

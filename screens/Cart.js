@@ -1,10 +1,10 @@
 import { Avatar, Divider, HStack, Icon, Text, VStack } from "native-base";
-import { useDataContext } from "../../contexts/DataContext";
-import { theme } from "../../utils/StaticVariable";
+import { useDataContext } from "../contexts/DataContext";
+import { theme } from "../utils/StaticVariable";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ScrollView, TouchableOpacity, RefreshControl } from "react-native";
 import React, { useState, useCallback, useEffect } from "react";
-import { client } from "../../axios/Client";
+import { client } from "../axios/Client";
 
 const { primaryBackgroundColor } = theme;
 
@@ -21,9 +21,7 @@ const Cart = ({ navigation }) => {
         const { data } = res.data;
         setCategory(data);
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch((err) => console.log(err));
   };
 
   const onRefresh = useCallback(() => {
