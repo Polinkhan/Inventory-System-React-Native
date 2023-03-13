@@ -1,61 +1,64 @@
-import { collection, doc, onSnapshot, setDoc } from "firebase/firestore";
-import { useEffect } from "react";
-import { createContext, useContext, useState } from "react";
-import { db } from "../firebase-init";
-import { LogBox } from "react-native";
+import { useToast } from "native-base";
+import { createContext, useContext, useEffect, useState } from "react";
+import { LogBox, useColorScheme } from "react-native";
+// import { fetchDataFromApi, fetcher } from "../utils/ApiCall";
+import * as SecureStore from "expo-secure-store";
+import { db } from "../DB/Firebase_init";
+import { doc, onSnapshot } from "firebase/firestore";
+// import * as Network from "expo-network";
 
+export const DataContext = createContext();
+export const useDataContext = () => useContext(DataContext);
+
+LogBox.ignoreLogs(["AsyncStorage"]);
 LogBox.ignoreLogs(["Setting a timer"]);
 
-const DataContext = createContext({
-  theme: {
-    bg: null,
-    nav: null,
-    txt: null,
-    primary: null,
-    secondary: null,
-  },
-  DATA: null,
-});
-export const useDataContext = () => useContext(DataContext);
 const DataContextProvider = (props) => {
-  const light = {
-    bg: "#f2f2f2",
-    nav: "#456bfe",
-    txt: "#FFFFFF",
-    primary: "#694fad",
-    secondary: "",
-  };
+  const toast = useToast();
+  const [currentUser, setCurrentUser] = useState({});
+  const [colorScheme, setColorScheme] = useState("light");
+  const [autoId, setAutoId] = useState(null);
+  const [barCode, setBarCode] = useState({ addItem: "", searchedItem: [] });
+  const [searchedItem, setSearchedItem] = useState([]);
 
-  const [theme, setTheme] = useState(light);
-  const [database, setDatabase] = useState();
-  const [isDataLoad, setDataLaod] = useState(false);
+  console.log(searchedItem, 4);
+
+  const makeToast = (message) => {
+    return toast.show({
+      description: message,
+    });
+  };
 
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, "inventoryData"), (snap) => {
-      const FULLDATA = {};
-      snap.docs.forEach((doc) => {
-        FULLDATA[doc.id] = doc.data();
-      });
-      setDatabase(FULLDATA.data);
-      setDataLaod(true);
+    console.log("g");
+    // (async () => {
+    //   const scheme = await SecureStore.getItemAsync("colorScheme");
+    //   if (!scheme) setColorScheme("light");
+    //   else setColorScheme(scheme);
+    // })();
 
-      return () => unsub();
+    const unsub = onSnapshot(doc(db, "System_Data", "last_auto_id"), (doc) => {
+      setAutoId(doc.data().id);
     });
-  }, []); //eslint-disable-line
 
-  const updateDatabase = (updatedData) => {
-    setDoc(doc(db, "inventoryData", "data"), updatedData);
-  };
+    return () => unsub();
+  }, []);
 
   const value = {
-    theme,
-    setTheme,
-    database,
-    updateDatabase,
-    isDataLoad,
+    autoId,
+    colorScheme,
+    setColorScheme,
+    currentUser,
+    setCurrentUser,
+    makeToast,
+    barCode,
+    setBarCode,
+    searchedItem,
+    setSearchedItem,
   };
-
-  return <DataContext.Provider value={value}>{props.children}</DataContext.Provider>;
+  return (
+    <DataContext.Provider value={value}>{props.children}</DataContext.Provider>
+  );
 };
 
 export default DataContextProvider;
